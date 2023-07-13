@@ -242,7 +242,7 @@ RegisterCommand('911', function(source, args, rawCommand)
     if config.nearestPostal then
         local playerCoords = GetEntityCoords(GetPlayerPed(source))
         local postal = exports['nearest-postal']:getPostalServer(playerCoords)
-        local postalCode = postal.code -- Access the specific key/property representing the postal code
+        local postalCode = postal.code
         TriggerClientEvent('cc-rpchat:addMessage', -1, '#ff0022', 'fa-solid fa-phone-volume', '911 | '..postalCode..' | '..playerName, msg)
     else
         TriggerClientEvent('cc-rpchat:addMessage', -1, '#ff0022', 'fa-solid fa-phone-volume', '911 | '..playerName, msg)
