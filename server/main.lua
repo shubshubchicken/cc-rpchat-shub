@@ -62,20 +62,20 @@ AddEventHandler('chatMessage', function(source, name, message)
     if message:sub(1, 1) == '/' then
         return
     else
-    if ccChat:checkSpam(source, message) and config.antiSpam == true then
-        TriggerClientEvent('cc-rpchat:addMessage', source, '#e67e22', 'fa-solid fa-triangle-exclamation', "Please Don't Spam", '', false)
-        return
-    end
     if config.esx then
         local xPlayer = ESX.GetPlayerFromId(source)
         playerName = xPlayer.getName()
     elseif config.qbcore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
-        playerName = xPlayer.PlayerData.charinfo.firstname .. "," .. xPlayer.PlayerData.charinfo.lastname 
+        playerName = xPlayer.PlayerData.charinfo.firstname .. ", " .. xPlayer.PlayerData.charinfo.lastname 
     else
         playerName = GetPlayerName(source)
     end
-        TriggerClientEvent('cc-rpchat:addMessage', -1, '#3498db', 'fa-solid fa-globe', 'OOC | '..playerName, message) 
+    if ccChat:checkSpam(source, message) and config.antiSpam == true then
+        TriggerClientEvent('cc-rpchat:addMessage', source, '#e67e22', 'fa-solid fa-triangle-exclamation', "Please Don't Spam", '', false)
+    return
+    end
+        TriggerClientEvent('cc-rpchat:addMessage', -1, '#3498db', 'fa-solid fa-globe', 'OOC | '..playerName, message)
     end
 end)
 
@@ -216,6 +216,37 @@ RegisterCommand('anon', function(source, args, rawCommand)
         sendToDiscord(16753920, playerName.." has executed /"..rawCommand:sub(1, 4), '**Command arguments**: '..msg, "Identifiers: \n"..GetPlayerIdentifier(source, 0).."\n"..GetPlayerIdentifier(source, 1).."\n"..GetPlayerIdentifier(source, 2).."\n"..GetPlayerIdentifier(source, 3))
     end
     TriggerClientEvent('cc-rpchat:addMessage', -1, '#2c3e50', 'fa-solid fa-mask', 'Anonymous | '.. source, msg)
+end, false)
+
+-- 911
+RegisterCommand('911', function(source, args, rawCommand)
+    local playerName
+    local msg = rawCommand:sub(5)
+    if ccChat:checkSpam(source, msg) and config.antiSpam == true then
+        TriggerClientEvent('cc-rpchat:addMessage', source, '#e67e22', 'fa-solid fa-triangle-exclamation', "Please Don't Spam", '', false)
+        return
+    end
+    if config.esx then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        playerName = xPlayer.getName()
+    elseif config.qbcore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        playerName = xPlayer.PlayerData.charinfo.firstname .. "," .. xPlayer.PlayerData.charinfo.lastname 
+    else
+        playerName = GetPlayerName(source)
+    end
+    if config.DiscordWebhook then
+        sendToDiscord(16753920, playerName.." has executed /"..rawCommand:sub(1, 3), '**Command arguments**: '..msg, "Identifiers: \n"..GetPlayerIdentifier(source, 0).."\n"..GetPlayerIdentifier(source, 1).."\n"..GetPlayerIdentifier(source, 2).."\n"..GetPlayerIdentifier(source, 3))
+    end
+
+    if config.nearestPostal then
+        local playerCoords = GetEntityCoords(GetPlayerPed(source))
+        local postal = exports['nearest-postal']:getPostalServer(playerCoords)
+        local postalCode = postal.code -- Access the specific key/property representing the postal code
+        TriggerClientEvent('cc-rpchat:addMessage', -1, '#ff0022', 'fa-solid fa-phone-volume', '911 | '..postalCode..' | '..playerName, msg)
+    else
+        TriggerClientEvent('cc-rpchat:addMessage', -1, '#ff0022', 'fa-solid fa-phone-volume', '911 | '..playerName, msg)
+    end
 end, false)
 
 -- Player join and leave messages
